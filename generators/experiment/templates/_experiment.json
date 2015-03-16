@@ -1,0 +1,5 @@
+{
+  "id" : "<%= id %>",
+  "description" : "<%= description %>",
+  "edit_url" : "<%= url %>"
+}
