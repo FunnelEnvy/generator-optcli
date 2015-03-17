@@ -61,7 +61,6 @@ Create an Optimizely Variation
 yo optimizely:vatiation
 ```
 
-
 ###Advanced Sub-Generator
 
 Advanced sub-generators will create a gulpfile that will enabled advanced features including:
