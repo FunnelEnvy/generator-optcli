@@ -126,7 +126,7 @@ var autoprefixer = require('gulp-autoprefixer');
   var preprocessor = require('gulp-less');//Convert LESS to CSS
 <%}%>
 <%if(preprocessor === 'scss'){ %>
-  var preprocessor = require('gulp-less');//Convert SCSS to CSS
+  var preprocessor = require('gulp-scss');//Convert SCSS to CSS
 <%}%>
 var rename = require('gulp-rename');//Rename Files
 var through = require('through-gulp');//Custom Transforms
@@ -218,10 +218,10 @@ gulp.task('global.js', function(){
 
 //Global CSS
 gulp.task('global.css', function(){
-  return gulp.src(path.join(SOURCE, 'global.<%= preprocessor ? (preprocessor === "less" ? "less" : "sass") : "css"%>' ))
+  return gulp.src(path.join(SOURCE, 'global.<%= preprocessor ? (preprocessor === "less" ? "less" : "scss") : "css"%>' ))
   .pipe(plumber())
   <% if(template || template1) { %>.pipe(through.map(ejsTemplate))//EJS<% }%>
-  <%if(preprocessor){ %>.pipe(preprocessor)<%}%>
+  <% if(preprocessor){ %>.pipe(preprocessor)<%}%>
   .pipe(autoprefixer({
       browsers:['> 1%', 'last 2 versions', 'Firefox ESR', 'Opera 12.1']
   }))//Automatic Prefixes
