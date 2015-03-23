@@ -1,6 +1,6 @@
 {
   "name": "generator-optimizely",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Yeoman generator",
   "license": "MIT",
   "main": "app/index.js",
@@ -17,12 +17,12 @@
     "test": "mocha"
   },
   "files": [
-      "generators/project",
-      "generators/experiment",
-      "generators/experiment-advanced",
-      "generators/variation",
-      "generators/variation-advanced"
-    ],
+    "generators/project",
+    "generators/experiment",
+    "generators/experiment-advanced",
+    "generators/variation",
+    "generators/variation-advanced"
+  ],
   "keywords": [
     "yeoman-generator"
   ],
