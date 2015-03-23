@@ -17,8 +17,12 @@
     "test": "mocha"
   },
   "files": [
-    "app"
-  ],
+      "generators/project",
+      "generators/experiment",
+      "generators/experiment-advanced",
+      "generators/variation",
+      "generators/variation-advanced"
+    ],
   "keywords": [
     "yeoman-generator"
   ],
