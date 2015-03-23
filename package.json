@@ -17,6 +17,7 @@
     "test": "mocha"
   },
   "files": [
+    "generators/app",
     "generators/project",
     "generators/experiment",
     "generators/experiment-advanced",
