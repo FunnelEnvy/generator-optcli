@@ -123,7 +123,7 @@ var crypto = require('crypto');
 var concat = require('gulp-concat');//Concatenate Files
 var autoprefixer = require('gulp-autoprefixer');
 <% if(preprocessor === "less"){ %>
-  var preprocessor = require('gulp-less');//Convert LESS to CSS
+  var preprocessor = require('gulp-less')();//Convert LESS to CSS
 <%}%>
 <%if(preprocessor === 'scss'){ %>
   var preprocessor = require('gulp-scss');//Convert SCSS to CSS

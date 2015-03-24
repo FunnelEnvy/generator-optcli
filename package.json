@@ -4,7 +4,7 @@
   "description": "Yeoman generator",
   "license": "MIT",
   "main": "app/index.js",
-  "repository": "johnhenryenvy/generator-optimizely",
+  "repository": "https://github.com/johnhenryenvy/generator-optimizely",
   "author": {
     "name": "John Henry",
     "email": "",

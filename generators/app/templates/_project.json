@@ -1,4 +1,0 @@
-{
-  "id" : "<%= id %>",
-  "include_jquery" : "<%= include_jquery %>"
-}
