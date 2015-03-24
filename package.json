@@ -1,6 +1,6 @@
 {
-  "name": "generator-optimizely",
-  "version": "0.0.8",
+  "name": "generator-optcli",
+  "version": "0.0.1",
   "description": "Yeoman generator",
   "license": "MIT",
   "main": "app/index.js",

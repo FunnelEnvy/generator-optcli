@@ -112,21 +112,20 @@ var Buffer = require('buffer').Buffer;
 
 //External
 var gulp = require('gulp');
-var merge = require('merge-stream');
-var ejs = require('ejs');
+var merge = require('merge-stream');<% if(template || template1) { %>
+var ejs = require('ejs');<%}%>
 var crypto = require('crypto');
 
 //Gulp Plugins
-<%if(babel){ %>var babel = require('gulp-babel');//Compile ES6<%}%>
-
-
+<%if(babel){ %>
+var babel = require('gulp-babel');//Compile ES6<%}%>
 var concat = require('gulp-concat');//Concatenate Files
 var autoprefixer = require('gulp-autoprefixer');
 <% if(preprocessor === "less"){ %>
-  var preprocessor = require('gulp-less')();//Convert LESS to CSS
+var preprocessor = require('gulp-less');//Convert LESS to CSS
 <%}%>
 <%if(preprocessor === 'scss'){ %>
-  var preprocessor = require('gulp-scss');//Convert SCSS to CSS
+var preprocessor = require('gulp-sass');//Convert SCSS to CSS
 <%}%>
 var rename = require('gulp-rename');//Rename Files
 var through = require('through-gulp');//Custom Transforms
@@ -144,7 +143,7 @@ var getFolders = function getFolders(dir) {
       return fs.statSync(path.join(dir, file)).isDirectory();
     });
 };
-
+<% if(template || template1) { %>
 var hasher = function(str){
   return HASHPREFIX + crypto
     .createHash('sha1')
@@ -153,7 +152,6 @@ var hasher = function(str){
         .digest('hex').substr(0,10);
   return Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
 };
-
 var defaultGetStrings = function(directory){
   var strings = {};
   var stringsFile = path.resolve(directory, "strings.json");
@@ -162,7 +160,6 @@ var defaultGetStrings = function(directory){
   }
   return strings;
 };
-
 var ejsStrings = function(data){
   var locals =    {
        strings : defaultGetStrings(SOURCE),
@@ -182,7 +179,6 @@ var defaultGetTemplates = function(directory){
   }
   return templates;
 };
-
 var ejsTemplate = function(data){
   var contents = data.contents.toString('utf8');
   var locals =    {
@@ -194,7 +190,7 @@ var ejsTemplate = function(data){
   data.contents = new Buffer(contents);
   return data;
 };
-
+<% }%>
 ////////////////
 //Utilities Tasks
 ////////////////
@@ -211,8 +207,8 @@ gulp.task('global.js', function(){
   ])
   .pipe(plumber())
   .pipe(concat('global.js'))//Concatenate
-  .pipe(through.map(ejsTemplate))//EJS
-  <%if(babel){ %>.pipe(babel)//ES6<%}%>
+  <% if(template || template1) { %>.pipe(through.map(ejsTemplate))//EJS<% }%>
+  <%if(babel){ %>.pipe(babel())//ES6<%}%>
   .pipe(gulp.dest(DEST));
 });
 
@@ -221,7 +217,7 @@ gulp.task('global.css', function(){
   return gulp.src(path.join(SOURCE, 'global.<%= preprocessor ? (preprocessor === "less" ? "less" : "scss") : "css"%>' ))
   .pipe(plumber())
   <% if(template || template1) { %>.pipe(through.map(ejsTemplate))//EJS<% }%>
-  <% if(preprocessor){ %>.pipe(preprocessor)<%}%>
+  <% if(preprocessor){ %>.pipe(preprocessor())<%}%>
   .pipe(autoprefixer({
       browsers:['> 1%', 'last 2 versions', 'Firefox ESR', 'Opera 12.1']
   }))//Automatic Prefixes
@@ -240,7 +236,7 @@ gulp.task('variation.js', function(){
        .pipe(plumber())
        .pipe(concat('variation.js'))//Concatenate
        <% if(template || template1) { %>.pipe(through.map(ejsTemplate))//EJS<% }%>
-       <%if(babel){ %>.pipe(babel)<%}%>
+       <%if(babel){ %>.pipe(babel())<%}%>
        .pipe(gulp.dest(path.join(DEST, dir)));
   });
   return merge(tasks);
@@ -248,7 +244,7 @@ gulp.task('variation.js', function(){
 
 //Main
 gulp.task('main',
-['global.js', 'global.css','variation.js', 'utility.count'])
+['global.js', 'global.css','variation.js'])
 
 //Watch
 gulp.task('watch',['main'],function(){

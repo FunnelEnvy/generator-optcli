@@ -73,6 +73,5 @@ module.exports = yeoman.generators.Base.extend({
   },
 
   install: function () {
-    console.log('Don\'t forget to run "npm install" in your directory')
   }
 });

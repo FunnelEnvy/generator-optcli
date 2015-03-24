@@ -113,7 +113,7 @@ module.exports = yeoman.generators.Base.extend({
       if(props.template){//Create strings.js
         this.fs.copyTpl(
           this.templatePath('_strings.json'),
-          this.destinationPath(props.name + '/input/strings.js'),
+          this.destinationPath(props.name + '/input/strings.json'),
           props
         )
       }
@@ -129,6 +129,6 @@ module.exports = yeoman.generators.Base.extend({
   },
 
   install: function () {
-    console.log('Don\'t forget to run "npm install" in your directory')
+    console.log('Don\'t forget to run "npm install" in your experiment directory')
   }
 });

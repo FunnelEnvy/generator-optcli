@@ -1,14 +1,14 @@
-# Optimizely Generator (generator-optimizely)
+# optcli Generator (generator-optcli)
 
 > [Yeoman](http://yeoman.io) generator
 
 
-Generator for local Optimizely Projects, Experiments, and Variations for use with optcli
+Generator for local optcli Projects, Experiments, and Variations for use with optcli
 
 ## What is optcli?
 
 
-Optcli (https://www.github.com/funnelenvy/optcli) is a command line tool that's used for creating optimizely experiments locallly.
+Optcli (https://www.github.com/funnelenvy/optcli) is a command line tool that's used for creating optcli experiments locallly.
 
 ## Installation
 
@@ -18,47 +18,44 @@ If you don't already have you, a scaffolding too installed, install it with:
 npm install -g yo
 ```
 
-Install the optimizely generator with:
+Install the optcli generator with:
 
 ```bash
-npm install -g generator-optimizely
+npm install -g generator-optcli
 ```
 
 ## Usage
 
 ```bash
-yo optimizely:<name of sub generator>
+yo optcli:<name of sub generator>
 ```
 
 This generator does not a have a default action, so you'll have to use it with one of the below sub generators
-
-
-
 
 ###Sub-Generator
 
 #### Project
 
-Create an Optimizely Project
+Create an optcli Project from within any directory
 
 ```bash
-yo optimizely:project
+yo optcli:project
 ```
 
 #### Experiment
 
-Create an Optimizely Experiment
+Create an optcli Experiment within a project directory
 
 ```bash
-yo optimizely:experiment
+yo optcli:experiment
 ```
 
 #### Variation
 
-Create an Optimizely Variation
+Create an optcli Variation within an experiment directory
 
 ```bash
-yo optimizely:vatiation
+yo optcli:vatiation
 ```
 
 ###Advanced Sub-Generator
@@ -70,18 +67,18 @@ Advanced sub-generators will create a gulpfile that will enabled advanced featur
 
 #### Experiment (Advanced)
 
-Create an Optimizely Experiment
+Create an optcli Experiment
 
 ```bash
-yo optimizely:experiment-advanced
+yo optcli:experiment-advanced
 ```
 
 #### Variation (Advanced)
 
-Create an Optimizely Variation
+Create an optcli Variation
 
 ```bash
-yo optimizely:vatiation-advanced
+yo optcli:vatiation-advanced
  ```
 
 
