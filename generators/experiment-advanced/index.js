@@ -55,8 +55,8 @@ module.exports = yeoman.generators.Base.extend({
       {
       type: 'checkbox',
       name: 'templating',
-      choices :['strings.js','templates/'],
-      message: 'Would you like to use a style pre-processor?',
+      choices :['strings.json','templates/'],
+      message: 'Which sort of templating would you like to use?',
       default: [true, true]
       }
       ,
