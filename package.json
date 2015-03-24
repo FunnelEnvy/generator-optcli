@@ -1,6 +1,6 @@
 {
   "name": "generator-optcli",
-  "version": "0.0.1",
+  "version": "0.0.8",
   "description": "Yeoman generator",
   "license": "MIT",
   "main": "app/index.js",
