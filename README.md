@@ -80,8 +80,8 @@ Create an optcli Variation
 yo optcli:vatiation-advanced
  ```
 
-####Advanced Features
-It's important to note that the advanced feature will create two additional directories within your experiment directory; an 'input' directory with the files to edit and an 'output' directory with files to be served or pushed via optcli.
+####Advanced Scaffolding
+It's important to note that the advanced feature will create two additional directories within your experiment directory; an __'input'__ directory with the files to edit and an __'output'__ directory with files to be served or pushed via optcli. Running the default gulp task (by typing either 'gulp' or 'gulp default')
 
 #####Style Pre-processing
 You can choose to use scss or less instead of plain css
@@ -97,12 +97,14 @@ If you choose this option, a special a 'strings' object will be available in for
   "greeting":"hello"
 }
 ```
+---
 ######experiment.js
 
 ---
 ```js
 console.log("<%- strings['greeting'] %>");//hello
 ```
+---
 
 #####Templating with templates/
 If you choose this option, a special a 'templates' object will be available in for ejs templating. The strings object is populated from files in the 'input/templates'. Note, that when importing strings from the templates object, you'll have to use the 'decodeURIComponent'
@@ -114,20 +116,18 @@ If you choose this option, a special a 'templates' object will be available in f
 ```html
 <div>Sample</div>
 ```
+---
 ######experiment.js
 
 ---
 ```js
 console.log(decodeURIComponent("<%- templates['sample.html'] %>"));
 ```
+---
 #####EJS Processing
 If you choose this option, you can take advantage of many of the features coming in the next version of javascript. See [babel.js](https://babeljs.io/).
 
-
-
-
 ######experiment.js
-
 ---
 ```js
 class Experiment{
@@ -137,12 +137,48 @@ class Experiment{
 }
 window.Experiment = Experiment
 ```
+---
 ######variation.js
-
 ---
 ```js
 new window.Experinemt();
 ```
+---
+####Other Gulp Tasks
+Other than the default tasks, we've included a few other tasks for your convinience
+
+##### gulp push
+Gulp push requires exactly one of three flags to work.
+
+###### --experiment
+The experiment flag will push an experiment from a given directory
+
+Example:
+```bash
+gulp push --experiment output
+
+```
+
+###### --variation
+The variation flag will push a variation from a given directory
+
+```bash
+gulp push --variation output/Default\ Variation
+
+```
+
+###### --all
+The all flag will push an experiment from a given directory AND variations created in subdirectories
+
+```bash
+gulp push --all output
+
+```
+##### gulp host
+Gulp host has not yet been implemented.
+
+
+
 ## License
 
 MIT

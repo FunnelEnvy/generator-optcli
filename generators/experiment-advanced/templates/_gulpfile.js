@@ -253,3 +253,131 @@ gulp.task('watch',['main'],function(){
 
 //Default
 gulp.task('default', ['main']);
+
+
+//NEW!!!
+//1. create scaffolding -- yo (optcli project, optcli experiment, oprcli variation)
+//2. hosting - localghost (optcli host)
+//3. push to /pull from optimizely (optcli push-experment, push-variation)
+
+
+var OptimizelyClient = require('optimizely-node-client');
+var child_process = require('child_process');
+var argv = require('yargs').argv;
+//var path = require('path');
+//var fs = require('fs');
+
+var expFromDir = function(directory){
+  var experiment_json = path.resolve(directory, 'experiment.json');
+  var experiment_css = path.resolve(directory, 'global.css');
+  var experiment_js = path.resolve(directory, 'global.js');
+  var experiment = JSON.parse(fs.readFileSync(experiment_json,'utf8'));
+  experiment_js = fs.readFileSync(experiment_js,'utf8');
+  experiment_css = fs.readFileSync(experiment_css,'utf8');
+  experiment.custom_js = experiment_js;
+  experiment.custom_css = experiment_css;
+  return experiment;
+};
+var varFromDir = function(directory){
+  var variation_json = path.resolve(directory, 'variation.json');
+  var variation_js = path.resolve(directory, 'variation.js');
+  var variation = JSON.parse(fs.readFileSync(variation_json,'utf8'));
+  variation_js = fs.readFileSync(variation_js,'utf8');
+  variation.js_component = variation_js;
+  return variation;
+};
+
+var jsonFromExp = function(directory, experiment){
+  fs.writeFileSync(path.resolve(directory,"global.js"), experiment.custom_js || "");
+  fs.writeFileSync(path.resolve(directory,"global.css"), experiment.custom_css || "");
+  experiment = JSON.parse(JSON.stringify(experiment));
+  delete experiment.custom_js;
+  delete experiment.custom_css;
+  return fs.writeFileSync(path.resolve(directory,"experiment.json"), JSON.stringify(experiment));
+};
+
+var jsonFromVar = function(directory, variation){
+  fs.writeFileSync(path.resolve(directory,"variation.js"), variation.js_component || "");
+  variation = JSON.parse(JSON.stringify(variation));
+  delete variation.js_component;
+  return fs.writeFileSync(path.resolve(directory,"variation.json"), JSON.stringify(variation));
+};
+
+gulp.task('push', function(){
+  var parentDirectory = path.resolve(process.cwd(), '..');
+  var directory = argv.variation || argv.experiment || argv.all || "";
+  if(!directory || directory === true){
+    console.error("Please specify directory with --experiment, --variation, or --all");
+    return;
+  }
+  directory = path.resolve(directory);
+  var APIToken = fs.readFileSync(
+    argv.token? path.resolve(argv.token) :
+    path.resolve(parentDirectory,".optcli","token"), {encoding:"utf-8"}).trim();
+  if(!APIToken){
+    console.error("Missing token.");
+    return;
+  }
+  var client = new OptimizelyClient(APIToken);
+  if(argv.experiment || argv.all){
+    var experiment = expFromDir(directory);
+    experiment.project_id = JSON.parse(
+        fs.readFileSync(
+          path.resolve(parentDirectory,"project.json"), {encoding:"utf-8"})
+      ).id;
+    if(!experiment.project_id){
+      console.error("Missing project id.");
+      return;
+    }
+    var createOrUpdate = experiment.id? 'update' : 'create';
+    client.pushExperiment(experiment)
+    .then(
+      function(updatedExperiment){
+        console.log("%sd experiment: " + updatedExperiment.id, createOrUpdate);
+          jsonFromExp(directory, updatedExperiment);
+          if(argv.all){
+            getFolders(directory).forEach(function(folder){
+              var output = child_process.spawn("gulp",
+                [
+                  'push',
+                  '--variation',
+                  path.join(directory, folder)
+                ],
+                {stdio: "inherit"}
+              );
+            })
+          }
+        },
+      function(error){
+        console.error("Unable to %s experiment: " + error.message, createOrUpdate);
+        console.error(error.stack);
+      }
+    );
+  }else{
+    var variation = varFromDir(directory);
+    variation.experiment_id = JSON.parse(
+        fs.readFileSync(
+          path.resolve(directory,"..","experiment.json"), {encoding:"utf-8"})
+      ).id;
+    if(!variation.experiment_id){
+      console.error("Missing experiment id.");
+      return;
+    }
+    var createOrUpdate = variation.id? 'update' : 'create';
+    client.pushVariation(variation)
+    .then(
+      function(updatedVariation){
+        console.log(
+           "%sd variation: " + updatedVariation.id,
+           createOrUpdate);
+          jsonFromVar(directory, updatedVariation);
+        },
+      function(error){
+        console.error(
+          "Unable to %s variation: " + error.message,
+          createOrUpdate);
+        console.error(error.stack);
+      }
+    );
+  }
+})
