@@ -254,18 +254,19 @@ gulp.task('watch',['main'],function(){
 //Default
 gulp.task('default', ['main']);
 
+<%if(push){ %>
 
-//NEW!!!
-//1. create scaffolding -- yo (optcli project, optcli experiment, oprcli variation)
-//2. hosting - localghost (optcli host)
-//3. push to /pull from optimizely (optcli push-experment, push-variation)
+/**
+ *@pubilc
+ *@task push
+ *@description push an experiment or variation to optimizely
+ */
 
-
-var OptimizelyClient = require('optimizely-node-client');
-var child_process = require('child_process');
-var argv = require('yargs').argv;
 //var path = require('path');
 //var fs = require('fs');
+var child_process = require('child_process');
+var argv = require('yargs').argv;
+var OptimizelyClient = require('optimizely-node-client');
 
 var expFromDir = function(directory){
   var experiment_json = path.resolve(directory, 'experiment.json');
@@ -381,3 +382,50 @@ gulp.task('push', function(){
     );
   }
 })
+<%}%>
+
+
+
+ <%if(host){ %>
+/**
+*@pubilc
+*@task host
+*@description host an experiment variaton on optimizely
+*/
+//var path = require('path');
+//var fs = require('fs');
+//var child_process = require('child_process');
+//var argv = require('yargs').argv;
+
+ gulp.task('host', function(){
+   var directory = argv.variation === true ? "" : argv.variation;
+   if(!directory){
+     return console.error("Missing variation folder (--variation)");
+   }
+   var project = JSON.parse(
+       fs.readFileSync(
+         path.resolve(process.cwd(), '..','project.json'), {encoding:"utf-8"})
+     );
+   var experiment = JSON.parse(
+       fs.readFileSync(
+         path.resolve(directory,'..',"experiment.json"), {encoding:"utf-8"})
+     );
+   var arguments = ['host'];
+   if(argv.live) arguments.push('--live');
+   if(experiment.edit_url.indexOf('https') === 0){
+     arguments.push('--https');
+     arguments.push('--savehttps');
+   }
+   if(project.include_jquery !== 'false'){
+     arguments.push('--jquery');
+   }
+   var globalCSS = path.resolve(directory, "..", "global.css");
+   var globalJS = path.resolve(directory, "..", "global.js");
+   var variationJS = path.resolve(directory, "variation.js");
+   arguments.push('--css=' + globalCSS);
+   arguments.push('--js=' + globalJS + ',' + globalJS);
+   arguments.push('--userscript');
+   child_process.spawn('localghost', arguments, {stdio:'inherit'})
+ })
+
+ <%}%>

@@ -66,6 +66,20 @@ module.exports = yeoman.generators.Base.extend({
       message: 'Would you like to use es6?',
       default: true
       }
+      ,
+      {
+      type: 'confirm',
+      name: 'push',
+      message: 'Would like to host your project to optimizely with gulp?',
+      default: true
+      }
+      ,
+      {
+      type: 'confirm',
+      name: 'host',
+      message: 'Would like to host your project locally with gulp?\n(Requires local installation of localghost with \'npm install -g localghost\'',
+      default: true
+      }
     ];
     this.prompt(prompts, function (props) {
       this.props = props;
