@@ -423,7 +423,7 @@ gulp.task('push', function(){
    var globalJS = path.resolve(directory, "..", "global.js");
    var variationJS = path.resolve(directory, "variation.js");
    arguments.push('--css=' + globalCSS);
-   arguments.push('--js=' + globalJS + ',' + globalJS);
+   arguments.push('--js=' + globalJS + ',' + variationJS);
    arguments.push('--userscript');
    child_process.spawn('localghost', arguments, {stdio:'inherit'})
  })
