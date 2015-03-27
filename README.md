@@ -161,13 +161,13 @@ Running this tasks will compile you experiment's input folder and place the cont
 ```bash
 gulp
 ```
-- or -
+__OR__
 ```bash
 gulp default
 ```
 
 ##### gulp watch
-Running this task is exactly like running the default task, except it will recompile your input folder into your output folder automatically whenever there is a change
+Running this task is exactly like running the default task, except it will recompile your input folder into your output folder automatically whenever there is a change.
 
 ```bash
 gulp watch
@@ -200,10 +200,6 @@ The all flag will push an experiment from a given directory AND variations creat
 gulp push --all output
 
 ```
-##### gulp host
-
-###### flag: --experiment
-The experiment flag will push an experiment from a given directory
 
 ##### gulp host
 Running this task will host your local variations
@@ -225,12 +221,19 @@ gulp host --live --variation output/<path to variation>
 
 ```
 
-###### webinterface: localhost
+###### webinterface
+
+(NOTE: this section could use some improvement)
+
 Once you've started hosting, you can visit http://localhost:8080 or (https://localhost:8080 if your experiment's edit url is uses https).
 
 This page will help you to install the userscript associated with optcli
 
-###### secure hosting (this section probably isn't terribly clear)
+###### secure hosting
+
+(NOTE: this section could use some improvement)
+
+
 When hosting a secure site, things may, at first, appear not to work. If this happens, visit https://localhost:8080 and tell your browser to allow you to visit the site. This warning is generally for sites
 
 When hosting a secure site for the first time, if you don't have a certificate file (__server.cert__) and a key file (__server.key__) file in your directory, new ones will be created for you. You can uses these files to host other variations in the future. Furthermore, if you associate the certificate with your browser, when you use this pair of files for hosting in the future, you won't have to worry about the aforementioned issues of your browser not working.
