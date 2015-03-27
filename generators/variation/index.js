@@ -19,8 +19,14 @@ module.exports = yeoman.generators.Base.extend({
     var prompts = [
       {
       type: 'input',
+      name: 'name',
+      message: 'What\'s the name of your variation?\nThis will be your description\'s folder name.',
+      default: 'Variation'
+      },
+      {
+      type: 'input',
       name: 'description',
-      message: 'What\'s the name of your variation?',
+      message: 'What\'s the description of your variation?',
       default: 'Default Variation'
       }
       ,
@@ -42,12 +48,12 @@ module.exports = yeoman.generators.Base.extend({
       var props = this.props;
       this.fs.copyTpl(//Create gulpfile.js
         this.templatePath('_variation.json'),
-        this.destinationPath(props.description + '/variation.json'),
+        this.destinationPath(props.name + '/variation.json'),
         props
       );
       this.fs.copyTpl(//Create gulpfile.js
         this.templatePath('_empty'),
-        this.destinationPath(props.description + '/variation.js'),
+        this.destinationPath(props.name + '/variation.js'),
         props
       );
     }
