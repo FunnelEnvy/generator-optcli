@@ -412,11 +412,12 @@ gulp.task('push', function(){
      );
    var arguments = ['host'];
    if(argv.live) arguments.push('--live');
+   console.log('Serving %s', experiment.edit_url)
    if(experiment.edit_url.indexOf('https') === 0){
      arguments.push('--https');
      arguments.push('--savehttps');
    }
-   if(project.include_jquery !== 'false'){
+   if(project.include_jquery && project.include_jquery !== 'false'){
      arguments.push('--jquery');
    }
    var globalCSS = path.resolve(directory, "..", "global.css");

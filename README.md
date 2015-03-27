@@ -34,7 +34,8 @@ This generator does not a have a default action, so you'll have to use it with o
 
 #### Project
 
-Create an optcli Project from within any directory
+Create an optcli Project from within any directory.
+Yo can crate a project in any directory on your system.
 
 ```bash
 yo optcli:project
@@ -43,6 +44,8 @@ yo optcli:project
 #### Experiment
 
 Create an optcli Experiment within a project directory
+Ensure that you are within an project directory before using.
+
 
 ```bash
 yo optcli:experiment
@@ -51,6 +54,8 @@ yo optcli:experiment
 #### Variation
 
 Create an optcli Variation within an experiment directory
+Ensure that you are within an experiment directory before using
+
 
 ```bash
 yo optcli:vatiation
@@ -60,13 +65,14 @@ yo optcli:vatiation
 
 Advanced sub-generators will create a gulpfile that will enabled advanced features including:
  - Templating
- - Style Pre-Processing (less,scss)
+ - Style Pre-Processing (less, scss)
  - And more...
 
 
 #### Experiment (Advanced)
 
-Create an optcli Experiment
+Create an optcli Experiment within a project directory
+Ensure that you are within an project directory before using
 
 ```bash
 yo optcli:experiment-advanced
@@ -74,10 +80,12 @@ yo optcli:experiment-advanced
 
 #### Variation (Advanced)
 
-Create an optcli Variation
+Create an optcli Variation within an experiment (advanced) directory
+Ensure that you are within an experiment directory before using.
+
 
 ```bash
-yo optcli:vatiation-advanced
+yo optcli:variation-advanced
  ```
 
 ####Advanced Scaffolding
@@ -144,13 +152,31 @@ window.Experiment = Experiment
 new window.Experinemt();
 ```
 ---
-####Other Gulp Tasks
+####Gulp Tasks
 Other than the default tasks, we've included a few other tasks for your convinience
+
+##### gulp / gulp default
+Running this tasks will compile you experiment's input folder and place the contents into your output folder.
+
+```bash
+gulp
+```
+- or -
+```bash
+gulp default
+```
+
+##### gulp watch
+Running this task is exactly like running the default task, except it will recompile your input folder into your output folder automatically whenever there is a change
+
+```bash
+gulp watch
+```
 
 ##### gulp push
 Gulp push requires exactly one of three flags to work.
 
-###### --experiment
+###### flag: --experiment
 The experiment flag will push an experiment from a given directory
 
 Example:
@@ -159,7 +185,7 @@ gulp push --experiment output
 
 ```
 
-###### --variation
+###### flag: --variation
 The variation flag will push a variation from a given directory
 
 ```bash
@@ -167,7 +193,7 @@ gulp push --variation output/Default\ Variation
 
 ```
 
-###### --all
+###### flag: --all
 The all flag will push an experiment from a given directory AND variations created in subdirectories
 
 ```bash
@@ -175,8 +201,39 @@ gulp push --all output
 
 ```
 ##### gulp host
-Gulp host has not yet been implemented.
 
+###### flag: --experiment
+The experiment flag will push an experiment from a given directory
+
+##### gulp host
+Running this task will host your local variations
+Gulp host runs localghost externally
+
+###### flag: --variation
+Use the variation flag to specify the directory of the variation being hosted. This is mandatory. You probably want to point this to your output folder.
+
+```bash
+gulp host --variation output/<path to variation>
+
+```
+
+###### flag: --live
+Using this flag will cause the hosted variation to refresh whenever files are changed.
+
+```bash
+gulp host --live --variation output/<path to variation>
+
+```
+
+###### webinterface: localhost
+Once you've started hosting, you can visit http://localhost:8080 or (https://localhost:8080 if your experiment's edit url is uses https).
+
+This page will help you to install the userscript associated with optcli
+
+###### secure hosting (this section probably isn't terribly clear)
+When hosting a secure site, things may, at first, appear not to work. If this happens, visit https://localhost:8080 and tell your browser to allow you to visit the site. This warning is generally for sites
+
+When hosting a secure site for the first time, if you don't have a certificate file (__server.cert__) and a key file (__server.key__) file in your directory, new ones will be created for you. You can uses these files to host other variations in the future. Furthermore, if you associate the certificate with your browser, when you use this pair of files for hosting in the future, you won't have to worry about the aforementioned issues of your browser not working.
 
 
 ## License
