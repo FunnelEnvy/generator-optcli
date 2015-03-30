@@ -4,11 +4,11 @@
   "description": "Yeoman generator",
   "license": "MIT",
   "main": "app/index.js",
-  "repository": "https://github.com/funnelenvy/generator-optimizely",
+  "repository": "https://github.com/funnelenvy/generator-optcli",
   "author": {
     "name": "John Henry",
     "email": "",
-    "url": "https://github.com/johnhenry/"
+    "url": "https://github.com/johnhenryenvy/"
   },
   "engines": {
     "node": ">=0.10.0"
