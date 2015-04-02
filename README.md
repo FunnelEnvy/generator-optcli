@@ -58,7 +58,7 @@ Ensure that you are within an experiment directory before using
 
 
 ```bash
-yo optcli:vatiation
+yo optcli:variation
 ```
 
 ###Advanced Sub-Generator
