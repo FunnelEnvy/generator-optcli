@@ -1,26 +1,51 @@
-# Optcli Generator (generator-optcli)
+#Optcli
 
-> [Yeoman](http://yeoman.io) generator
+Note: the [original optcli tool](https://github.com/funnelenvy/Optimizely-cli) is depricated in favor of the workflow described here.
+
+__Optcli__ is a set of tools used by developers to create and manipulate Optimizely experiments on their local machines in addition to using the Optimizely web interface.
+
+By developing locally, you are free to use whichever tools you want -- text editors, IDEs, and even precompilers -- to develop Optimizely experiments.
+
+In addition to developing locally, optcli adds a number of optional features that make test development easier and more efficient:
+
+- Style Sheet Preprocessors -- Use SCSS or LESS instead of just plain CSS
+- Templating -- Create html template files that can be automatically included in your script files, rather than manually and painstakingly creating complicated string within javascript.
+- Concatenate -- Import and concatenate scripts into your own, eliminating the need to fetch resources at run time
+- ECMAScript 6 -- Use the latest additions to JavaScript, such as classes and generators, to make your code more efficient
+- Much much more!
 
 
-Generator for local optcli Projects, Experiments, and Variations for use with optcli
+##Introduction
 
-## What is optcli?
-[Optcli](https://www.github.com/funnelenvy/optcli) is a command line tool that's used for creating and previewing optcli experiments locallly.
+Optcli, much like the [Yeoman project](http://yeoman.io/) that inspired it, optcli is built on a set of open source tools.
 
-## Installation
+- [yo](https://github.com/yeoman/yo) -- __yo__ is a scaffolding tool used to create projects, experiments, and variations on your local machine.
 
-If you don't already have you, a scaffolding too installed, install it with:
+  - [generator-optcli](https://github.com/funnelenvy/generator-optcli) -- __yo__ uses the __optcli generator__ to create a directory of local files and folders that can be hosted locally and/or pushed to Optimizely. It also creates a task runner file used in conjunction with gulp that's responsible for hosting variations locally and pushing content to Optimizely.
+
+
+
+- [localghost](https://github.com/funnelenvy/localghost) -- __localghost__ is a local server used to host and test variations locally before being pushed to Optimizely. Note: once installed, there is a gulp task that will call localghost automatically -- you will not have to call it yourself.
+
+- [gulp](https://github.com/gulpjs/gulp) -- __gulp__ is a tasks runner that's used to preform tasks associated with your experiment. It is used to host files locally, and push files to Optimizely. It is also used to facilitate the optional features mentioned above.
+
+##Installation
+
+To install __optcli__, first you must install [node](https://nodejs.org/). Node is a runtime that the application requires and npm is a package manager that makes it easy to install runtime components. You'll also need [npm](https://www.npmjs.com/) -- a pacage manager -- but it's installed alongside node by default.
+
+Once the prerequisites have been installed, on your command line, enter the following command in your terminal:
 
 ```bash
-npm install -g yo
+npm install -g yo generator-optcli localhost gulp
 ```
-
-Install the optcli generator with:
+Note: if the installation fails, try installing with the sudo command:
 
 ```bash
-npm install -g generator-optcli
+sudo npm install -g yo generator-optcli localhost gulp
 ```
+
+You now have all the necessary components installed to start working.
+
 
 ## Usage
 
