@@ -31,21 +31,27 @@ Optcli, much like the [Yeoman project](http://yeoman.io/) that inspired it, optc
 
 ##Installation
 
-To install __optcli__, first you must install [node](https://nodejs.org/). Node is a runtime that the application requires and npm is a package manager that makes it easy to install runtime components. You'll also need [npm](https://www.npmjs.com/) -- a pacage manager -- but it's installed alongside node by default.
+###Prerequesites
 
-Once the prerequisites have been installed, on your command line, enter the following command in your terminal:
+To install __optcli__, first you must download and run the __node__ installer from [https://nodejs.org/](https://nodejs.org/). Node is a runtime that the optcli application requires.
+
+Second, you'll need [npm](https://www.npmjs.com/), a package manager that makes it easy to install runtime components. It's installed alongside node by default, so you can likely ignore this step
+
+(Note : Some users that have installed node via methods other than the one above have had issues using yo. For best results, please install/update you node installation only via downloading the instatter from  )
+
+###Components
+
+Once the prerequisites have been installed, on your command line, enter the following command in your terminal to install all necessary components:
 
 ```bash
-npm install -g yo generator-optcli localhost gulp
+npm install -g yo generator-optcli localghost gulp
 ```
 Note: if the installation fails, try installing with the sudo command:
 
 ```bash
-sudo npm install -g yo generator-optcli localhost gulp
+sudo npm install -g yo generator-optcli localghost gulp
 ```
-
 You now have all the necessary components installed to start working.
-
 
 ## Usage
 
