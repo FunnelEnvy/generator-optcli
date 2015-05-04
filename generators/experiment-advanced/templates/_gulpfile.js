@@ -294,14 +294,14 @@ var jsonFromExp = function(directory, experiment){
   experiment = JSON.parse(JSON.stringify(experiment));
   delete experiment.custom_js;
   delete experiment.custom_css;
-  return fs.writeFileSync(path.resolve(directory,"experiment.json"), JSON.stringify(experiment));
+  return fs.writeFileSync(path.resolve(directory,"experiment.json"), JSON.stringify(experiment, null, " "));
 };
 
 var jsonFromVar = function(directory, variation){
   fs.writeFileSync(path.resolve(directory,"variation.js"), variation.js_component || "");
   variation = JSON.parse(JSON.stringify(variation));
   delete variation.js_component;
-  return fs.writeFileSync(path.resolve(directory,"variation.json"), JSON.stringify(variation));
+  return fs.writeFileSync(path.resolve(directory,"variation.json"), JSON.stringify(variation, null, " "));
 };
 
 gulp.task('push', function(){
