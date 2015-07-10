@@ -11,6 +11,7 @@
     <% if(preprocessor === "less"){ %>"gulp-less": "^3.0.1",<%}%>
     <% if(babel){ %> "gulp-babel": "^4.0.0",<%}%>
     <% if(template || template1){ %>"ejs": "^2.3.1",<%}%>
+    <% if(host){ %>"localghost": "^0.1.5",<%}%>
     "gulp": "^3.8.11",
     "gulp-autoprefixer": "^2.1.0",
     "gulp-changed": "^1.2.1",

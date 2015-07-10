@@ -301,7 +301,7 @@ var jsonFromVar = function(directory, variation){
   fs.writeFileSync(path.resolve(directory,"variation.js"), variation.js_component || "");
   variation = JSON.parse(JSON.stringify(variation));
   delete variation.js_component;
-  return fs.writeFileSync(path.resolve(directory,"variation.json"), JSON.stringify(variation, null, " "));
+  return fs.writeFileSync(path.resolve(directory,"variation.json"), JSON.stringify(variation, null, " which"));
 };
 
 gulp.task('push', function(){
@@ -396,7 +396,7 @@ gulp.task('push', function(){
 //var fs = require('fs');
 //var child_process = require('child_process');
 //var argv = require('yargs').argv;
-
+var localghost = require('localghost');
  gulp.task('host', function(){
    var directory = argv.variation === true ? "" : argv.variation;
    if(!directory){
@@ -410,23 +410,32 @@ gulp.task('push', function(){
        fs.readFileSync(
          path.resolve(directory,'..',"experiment.json"), {encoding:"utf-8"})
      );
-   var arguments = ['host'];
-   if(argv.live) arguments.push('--live');
+   //var arguments = ['host'];
+   var arguments = {};
+   //if(argv.live) arguments.push('--live');
+   if(argv.live) arguments.live = true;
    console.log('Serving %s', experiment.edit_url)
    if(experiment.edit_url.indexOf('https') === 0){
-     arguments.push('--https');
-     arguments.push('--savehttps');
+     //arguments.push('--https');
+     //arguments.push('--savehttps');
+     arguments.https = true;
+     arguments.useinternal = true;
    }
    if(project.include_jquery && project.include_jquery !== 'false'){
-     arguments.push('--jquery');
+     //arguments.push('--jquery');
+     arguments.jquery = true;
    }
    var globalCSS = path.resolve(directory, "..", "global.css");
    var globalJS = path.resolve(directory, "..", "global.js");
    var variationJS = path.resolve(directory, "variation.js");
-   arguments.push('--css=' + globalCSS);
-   arguments.push('--js=' + globalJS + ',' + variationJS);
-   arguments.push('--userscript');
-   child_process.spawn('localghost', arguments, {stdio:'inherit'})
+   //arguments.push('--css=' + globalCSS);
+   //arguments.push('--js=' + globalJS + ',' + variationJS);
+   //arguments.push('--userscript');
+   arguments.css = globalCSS;
+   arguments.js = [globalJS , variationJS].join(',');
+   arguments.userscript = true;
+   //child_process.spawn('localghost', arguments, {stdio:'inherit'})
+   localghost(options);
  })
 
  <%}%>
