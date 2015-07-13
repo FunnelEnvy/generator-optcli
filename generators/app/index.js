@@ -1,7 +1,7 @@
 'use strict';
 var yeoman = require('yeoman-generator');
 var chalk = require('chalk');
-var yosay = require('yosay');
+var funnelenvysays = require('funnelenvysays');
 
 module.exports = yeoman.generators.Base.extend({
   initializing: function () {
@@ -9,10 +9,16 @@ module.exports = yeoman.generators.Base.extend({
   },
   prompting: function () {
     var done = this.async();
-    // Have Yeoman greet the user.
-    console.log(
-      'No default task. Usage information located at: %s', require('../../package.json').repository
-    );
+    this.log(
+      funnelenvysays(
+chalk.blue('Please use:\n') +
+'yo optcli:project\n\
+yo optcli:experimen\n\
+or yo optcli:variation'));
+    this.log(
+      chalk.red('No default task.') +
+      ' Usage information located at: ' +
+      this.pkg.repository);
     done();
   },
 });

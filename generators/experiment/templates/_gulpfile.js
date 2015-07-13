@@ -1,105 +1,59 @@
-////////////////
-//Usage
-////////////////
 /**
 This gulp file is intended for use with with optcli.
 
 The 'main' task, run by default, preforms a number of subtasks:
 
- - The 'global.js' subtask produces an experiment level javascript file by concatenating any number of javascript files and compiling them into a single file. This task also takes advantage of the babel javascript transpiler to allow the use of future versions of javascript... today! Visit https://babeljs.io/ to learn more.
+ - The 'global.js' task produces an experiment level javascript file.
 
- - The 'global.css' subtask produces stylesheet file by converting a scss file into a css file.
+ - The 'global.css' task produces stylesheet file.
 
- - The 'variation.js' subtask works in much the same way as the 'global.js' task, but produces a variation level javascript file.
+ - The 'variation.js' task works in much the same way as the 'global.js' task, but produces a variation level javascript file.
 
 - Each file is also processed as an ejs template. Locals include:
-   - A 'templates' object created from files within a 'templates' directory.
-      keys are the file names and values are the contents
-   - A 'strings' object imported from an 'strings.json' file.
-   - A 'hasher' function to help ensure unique strings and prevent naming
+   - A 'template' function created from files within a 'templates' directory.
+      keys are the file names and values are arrays of the contents
+   - A 'hx' function to help ensure unique strings and prevent naming
       collisions (css classes, ids etc.)
-Besure to properly decode/unescape strings broungt into your code through the templating feature.
 
-There is also a 'watch' task that watches the SOURCE directory runs the 'main' task should anything change.
+There is also a 'watch' task that watches the '.' directory runs the 'main' task should anything change.
+There is also a 'lint' task to ensure good coding practices
 
-Example - Running the main gulp task on this directory:
+Your working directory is assumed to be similar to:
 
-input/
-  templates/
-  strings.json
-  arbitrary1.js (es6)
-  arbitrary2.js (es6)
-  ...
-  global.js (es6)
-  global.scss (scss)
-  var_1/
-    arbitraryA.js (es6)
-    arbitraryB.js (es6)
-    ...
-    variation.js (es6)
-  var_2/
-    arbitraryC.js (es6)
-    arbitraryD.js (es6)
-    ...
-    variation.js (es6)
-
-will result in this directory:
-
-output/
-  global.js (es5)
-  global.css (scss)
-  var_1/
-    variation.js (es5)
-  var_2/
-    variation.js (es5)
-
-Also, I've set up my working directory like so:
-
-<project>/
+<project folder>/
   .optcli/
     token
   project.json
-  <experiment>/
-    gulpfile.js
-    package.json (for gulpfile)
-    node_modules (for gulpfile)
-    input/ (see above)
-    output/ (see above)
+    <experiment folder>/
+      .git/
+      readme.md
+      _/
+        assets/
+        templates/
+        includes/
+        experiment.{js, ts}
+        experiment.{css, scss, less}
+      node_modules/
+      package.json
+      {gruntfile, gulpfile, brocolifile}.js
+      .eslint
 
-Some Notes:
-
-  Your working directory is assumed to be a project director as above.
-
-  Create your experiment with:
-  'optcli experiment <experiment>/DEST <description> <url>'
-
-  Create your variations with:
-  'optcli variation <experiment>/DEST <variaition> <description>'
-
-  Optcli will handle the various json files when pushing, so you won't need to touch the '<experiment>/DEST' directory anymore.
-
-  Host a specific variation with
-  'optcli host -lt :watch <experiment>/DEST/<variation>'
-  or
-  'optcli host -slt :watch <experiment>/DEST/<variation>' (ssl)
-  You can also user the longer versions, which, honestly isn't much longer
-  'optcli host --live --task=gulp:watch <experiment>/DEST/<variation>'
-  'optcli host --ssl --live --task=gulp:watch <experiment>/DEST/<variation>'
-
-  Modify the input directory
-
-  The accompaning package.json file is not necessary.
-  but having it around will allow you to install all gulpfile dependancies with a simple 'npm install'.
-.
+      experiment.js
+      experiment.json
+      experiment.css
+      <variation>/
+        _/
+          includes/
+          variation.{js, .ts}
+        variation.js
+        variation.json
 */
 
 
 ////////////////
 //Config
 ////////////////
-var SOURCE = 'input'; //The source folder
-var DEST = 'output'; //The destination
-var HASHPREFIX = 'ab64-'; //The prefix for the hasher.
+var HASHPREFIX = '<%= Date.now() %>'; //The prefix for the hx.
 
 ////////////////
 //Dependencies
@@ -112,25 +66,19 @@ var Buffer = require('buffer').Buffer;
 
 //External
 var gulp = require('gulp');
-var merge = require('merge-stream');<% if(template || template1) { %>
+var merge = require('merge-stream');<% if(templating) { %>
 var ejs = require('ejs');<%}%>
 var crypto = require('crypto');
 
 //Gulp Plugins
-<%if(babel){ %>
-var babel = require('gulp-babel');//Compile ES6<%}%>
 var concat = require('gulp-concat');//Concatenate Files
 var autoprefixer = require('gulp-autoprefixer');
-<% if(preprocessor === "less"){ %>
-var preprocessor = require('gulp-less');//Convert LESS to CSS
-<%}%>
-<%if(preprocessor === 'scss'){ %>
-var preprocessor = require('gulp-sass');//Convert SCSS to CSS
-<%}%>
+
 var rename = require('gulp-rename');//Rename Files
 var through = require('through-gulp');//Custom Transforms
 var plumber = require('gulp-plumber');//Handles Errors
 var changed = require('gulp-changed');//Caches Changes
+var eslint = require('gulp-eslint');
 ////////////////
 //Utilities
 ////////////////
@@ -139,57 +87,90 @@ var getFolders = function getFolders(dir) {
   return fs.readdirSync(dir)
     .filter(function(file) {
       if(file === 'node_modules') return;
-      if(file === 'templates') return;
+      if(file[0] === '-') return;
       return fs.statSync(path.join(dir, file)).isDirectory();
     });
 };
-<% if(template || template1) { %>
-var hasher = function(str){
-  return HASHPREFIX + crypto
-    .createHash('sha1')
+<% if(templating) { %>
+var hasher = function(str, algorithm, digest, length){
+  algorithm = 'sha1' || algorithm;
+  digest = 'hex' || digest;
+  var hash =  HASHPREFIX + crypto
+    .createHash(algorithm)
       .update(HASHPREFIX)
-      .update(str)
-        .digest('hex').substr(0,10);
-  return Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+      .update(String(str))
+        .digest(digest);
+  return (length > 0) ? hash : hash.substr(0, length)
 };
-var defaultGetStrings = function(directory){
-  var strings = {};
-  var stringsFile = path.resolve(directory, "strings.json");
-  if(fs.existsSync(stringsFile)){
-    strings = JSON.parse(fs.readFileSync(stringsFile));
+
+var defaultGetPackage = function(directory){
+  var pkg = {};
+  var pkgFile = path.resolve(directory, "package.json");
+  if(fs.existsSync(pkgFile)){
+    pkg = JSON.parse(fs.readFileSync(pkgFile));
   }
-  return strings;
+  return pkg;
 };
-var ejsStrings = function(data){
-  var locals =    {
-       strings : defaultGetStrings(SOURCE),
-       hasher : hasher
-     };
-  return ejs.render(data, locals);
+
+var defaultGetExperiment = function(directory){
+  var experiment = JSON.parse(
+      fs.readFileSync(
+        path.resolve(process.cwd(), directory, "experiment.json"), {encoding:"utf-8"})
+    );
+  return experiment;
+};
+
+var defaultGetVariation = function(directory){
+  var variation = JSON.parse(
+      fs.readFileSync(
+        path.resolve(process.cwd(),directory, "variation.json"), {encoding:"utf-8"})
+    );
+  return variation;
 };
 var defaultGetTemplates = function(directory){
   var templates = {};
-  var templatesDir = path.resolve(directory, "templates");
+  var templatesDir = path.resolve(directory, "_/assets/templates/");
   if(fs.existsSync(templatesDir)){
     fs.readdirSync(templatesDir).forEach(function(file) {
-      var text = fs.readFileSync(path.resolve(templatesDir,file),
-        'utf-8').replace(/(?:\r\n|\r|\n)/g, '\n');
-        templates[file] = escape(ejsStrings(text));
+      templates[file] = fs.readFileSync(path.resolve(templatesDir,file),
+        'utf-8')
+        .replace(/(?:\r\n|\r|\n)/g, '\n')
     });
   }
-  return templates;
+  return function(key, locals){
+    var template = templates[key] || '';
+    return (locals ? ejs.render(template, locals) : template)
+    .split('\n')
+    .map(function(text){return text});
+  }
 };
 var ejsTemplate = function(data){
   var contents = data.contents.toString('utf8');
-  var locals =    {
-       templates : defaultGetTemplates(SOURCE),
-       strings : defaultGetStrings(SOURCE),
-       hasher : hasher
+  var locals = {
+       template : defaultGetTemplates('.'),
+       package  : defaultGetPackage('.'),
+       hx       : hasher,
+       experiment : defaultGetExperiment('.')
      };
   contents = ejs.render(contents.toString('utf8'), locals);
   data.contents = new Buffer(contents);
   return data;
 };
+var ejsTemplateVariation = function(dir){
+  return function(data){
+    var contents = data.contents.toString('utf8');
+    var locals = {
+         template : defaultGetTemplates('.'),
+         package  : defaultGetPackage('.'),
+         hx       : hasher,
+         experiment : defaultGetExperiment('.'),
+         variation  : defaultGetVariation('.' + '/' + dir)
+       };
+    contents = ejs.render(contents.toString('utf8'), locals);
+    data.contents = new Buffer(contents);
+    return data;
+  };
+}
 <% }%>
 ////////////////
 //Utilities Tasks
@@ -199,74 +180,95 @@ gulp.task('utility.count',function(){
   console.log('count: %s', ++count)
 });
 
-//Global JS
+////////////////
+//Tasks
+////////////////
+
+//Task: global.js
 gulp.task('global.js', function(){
   return gulp.src([
-    path.join(SOURCE,'!(global)*.js'),
-    path.join(SOURCE, 'global.js')//Add global.js last
+    path.join('.','/_/includes/*.*'),
+    path.join('.', '_/global.js')
   ])
   .pipe(plumber())
   .pipe(concat('global.js'))//Concatenate
-  <% if(template || template1) { %>.pipe(through.map(ejsTemplate))//EJS<% }%>
-  <%if(babel){ %>.pipe(babel())//ES6<%}%>
-  .pipe(gulp.dest(DEST));
+  <% if(templating) { %>.pipe(through.map(ejsTemplate))//EJS<% }%>
+  .pipe(gulp.dest('.'));
 });
 
-//Global CSS
+//Task: global.css
+<% if(preprocessor === "less"){ %>
+var preprocessor = require('gulp-less');//Convert LESS to CSS
+<%}%>
+<%if(preprocessor === 'scss'){ %>
+var preprocessor = require('gulp-sass');//Convert SCSS to CSS
+<%}%>
 gulp.task('global.css', function(){
-  return gulp.src(path.join(SOURCE, 'global.<%= preprocessor ? (preprocessor === "less" ? "less" : "scss") : "css"%>' ))
+  return gulp.src(path.join('.', '_/global.<%= preprocessor ? (preprocessor === "less" ? "less" : "scss") : "css"%>' ))
   .pipe(plumber())
-  <% if(template || template1) { %>.pipe(through.map(ejsTemplate))//EJS<% }%>
+  <% if(templating) { %>.pipe(through.map(ejsTemplate))//EJS<% }%>
   <% if(preprocessor){ %>.pipe(preprocessor())<%}%>
   .pipe(autoprefixer({
       browsers:['> 1%', 'last 2 versions', 'Firefox ESR', 'Opera 12.1']
   }))//Automatic Prefixes
   .pipe(rename('global.css'))//Rename
-  .pipe(gulp.dest(DEST));
+  .pipe(gulp.dest('.'));
 });
 
-//Variation JS
+//Task: variation.js
 gulp.task('variation.js', function(){
-  var folders = getFolders(SOURCE);
+  var folders = getFolders('.');
   var tasks = folders.map(function(dir) {
      return gulp.src([
-         path.join(SOURCE, dir, '!(variation)*.js'),
-         path.join(SOURCE, dir, 'variation.js')//Add variation.js last
+         path.join('.', dir, '/_/includes/*.*'),
+         path.join('.', dir, '_/variation.js')
        ])
        .pipe(plumber())
-       .pipe(concat('variation.js'))//Concatenate
-       <% if(template || template1) { %>.pipe(through.map(ejsTemplate))//EJS<% }%>
-       <%if(babel){ %>.pipe(babel())<%}%>
-       .pipe(gulp.dest(path.join(DEST, dir)));
+       .pipe(concat('variation.js'))
+       <% if(templating) { %>.pipe(through.map(ejsTemplateVariation(dir)))//EJS<% }%>
+       .pipe(gulp.dest(path.join('.', dir)));
   });
   return merge(tasks);
 });
 
-//Main
+//Task: lint
+gulp.task('lint', function () {
+    return gulp.src(['**/*.js'])
+        .pipe(eslint())
+        .pipe(eslint.format())
+        .pipe(eslint.failOnError());
+});
+
+//Task: main
 gulp.task('main',
 ['global.js', 'global.css','variation.js'])
 
-//Watch
-gulp.task('watch',['main'],function(){
-  gulp.watch(path.join(SOURCE, "**/*.*"), ['main']);
+//Task: watch
+gulp.task('watch', ['main'], function(){
+  var watchFiles = [
+    path.join('.', "_/**.*"),
+    path.join('.', "experiment.json"),
+    path.join('.', "package.json"),
+    path.join('.', "**/_/**.*"),
+    path.join('.', "**/variation.json"),
+  ];
+  gulp.watch(watchFiles, ['main']);
+  console.log('Watching:');
+  console.log(watchFiles.join('\n'));
 });
 
-//Default
+//Task: default
 gulp.task('default', ['main']);
 
-<%if(push){ %>
-
-/**
+<%if(push){ %>/**
  *@pubilc
  *@task push
  *@description push an experiment or variation to optimizely
  */
 
-//var path = require('path');
-//var fs = require('fs');
-var child_process = require('child_process');
 var argv = require('yargs').argv;
 var OptimizelyClient = require('optimizely-node-client');
+var child_process = require('child_process');
 
 var expFromDir = function(directory){
   var experiment_json = path.resolve(directory, 'experiment.json');
@@ -279,6 +281,7 @@ var expFromDir = function(directory){
   experiment.custom_css = experiment_css;
   return experiment;
 };
+
 var varFromDir = function(directory){
   var variation_json = path.resolve(directory, 'variation.json');
   var variation_js = path.resolve(directory, 'variation.js');
@@ -301,16 +304,17 @@ var jsonFromVar = function(directory, variation){
   fs.writeFileSync(path.resolve(directory,"variation.js"), variation.js_component || "");
   variation = JSON.parse(JSON.stringify(variation));
   delete variation.js_component;
-  return fs.writeFileSync(path.resolve(directory,"variation.json"), JSON.stringify(variation, null, " which"));
+  return fs.writeFileSync(path.resolve(directory,"variation.json"), JSON.stringify(variation, null, " "));
 };
 
 gulp.task('push', function(){
   var parentDirectory = path.resolve(process.cwd(), '..');
   var directory = argv.variation || argv.experiment || argv.all || "";
-  if(!directory || directory === true){
+  if(!directory){
     console.error("Please specify directory with --experiment, --variation, or --all");
     return;
   }
+  if(directory === true) directory = '.';
   directory = path.resolve(directory);
   var APIToken = fs.readFileSync(
     argv.token? path.resolve(argv.token) :
@@ -392,11 +396,7 @@ gulp.task('push', function(){
 *@task host
 *@description host an experiment variaton on optimizely
 */
-//var path = require('path');
-//var fs = require('fs');
-//var child_process = require('child_process');
-//var argv = require('yargs').argv;
-var localghost = require('localghost');
+
  gulp.task('host', function(){
    var directory = argv.variation === true ? "" : argv.variation;
    if(!directory){
@@ -410,32 +410,22 @@ var localghost = require('localghost');
        fs.readFileSync(
          path.resolve(directory,'..',"experiment.json"), {encoding:"utf-8"})
      );
-   //var arguments = ['host'];
    var arguments = {};
-   //if(argv.live) arguments.push('--live');
    if(argv.live) arguments.live = true;
    console.log('Serving %s', experiment.edit_url)
    if(experiment.edit_url.indexOf('https') === 0){
-     //arguments.push('--https');
-     //arguments.push('--savehttps');
      arguments.https = true;
      arguments.useinternal = true;
    }
    if(project.include_jquery && project.include_jquery !== 'false'){
-     //arguments.push('--jquery');
      arguments.jquery = true;
    }
    var globalCSS = path.resolve(directory, "..", "global.css");
    var globalJS = path.resolve(directory, "..", "global.js");
    var variationJS = path.resolve(directory, "variation.js");
-   //arguments.push('--css=' + globalCSS);
-   //arguments.push('--js=' + globalJS + ',' + variationJS);
-   //arguments.push('--userscript');
-   arguments.css = globalCSS;
-   arguments.js = [globalJS , variationJS].join(',');
+   arguments.css = [globalCSS];
+   arguments.js = [globalJS , variationJS];
    arguments.userscript = true;
-   //child_process.spawn('localghost', arguments, {stdio:'inherit'})
-   localghost(options);
+   require('localghost')(arguments);
  })
-
  <%}%>

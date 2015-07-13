@@ -1,51 +1,54 @@
 #TODO
- - Make localghost local requirement
- - Re-Arrang Menu
- - Incorporate Funnelenvysays
- - Add ability to import upon creation
- - Remove es6
- - Templating Mandatory
- - Move javascript imports into a *_scripts* directory
- - Move templates into a *_templates* directory
- - Add *_global.js*, *_global.scss/less*, *_variation.js* to differentiate from compiled
- - Default experiment name in strings.js
- - Default templates for global.js
+ - Allow creation of experiment to dove tail into variations
+    - How many variations would you like to create? (1)
+ - Add ability to pull and/or import upon creation
+ - Separate build file creation and base experiment creation
+    - gulp optcli:project
+    - gulp optcli:experiment
+    - gulp optcli:experiment-gulpfile
+    - gulp optcli:experiment-gruntfile
+    - gulp optcli:experiment-broccolifile
+    - gulp optcli:variation {num variations}
+ - Add Three-way Merge
+    - add \_/cache/ folder
+    - add --force, --diffloglevel flags
+    - compare between current.json, previous.json, live.json
     ```javascript
-    $('body').addClass('<%= experiment.name %>');
-    window['<%= experiment.name %>'] = function(options){
-      options = options || {};
-      var variation = options.variation || {};
-      //Suggestd: start logic here
-      switch(variation){
-        default:
-          break;
-      };
-    }
-    ```
-  - Default templates for variation.js
-     ```javascript
-     $('body').addClass('<%= experiment.name %>' + '_' + '<%= variation.name %>' );
-     window['<%= experiment.name %>']({
-       variation:'<%= variation.description %>',
-     })
-    ```
-  - Default templates for global.css
-     ```scss
-    .<%= experiment.name %>{
-      /*Suggestd: start styling here*/
-    }
-    <% experiment.getVariations().forEach(function(variation){ %>
-    .<%= experiment.name %>.<%= experiment.name %>_<%= variation.name %>{
-      /*Suggestd: start styling here*/
-    }
-    <%}%>
-    ```
+      var difference = function(first, second){
+        return first
+        .getOwnKeys()
+        .map(function(key){
+          var f = JSON.stringify(first[key]);
+          var s = JSON.stringify(second[key]);
+          return (f === s) ? undefined : [key, f, s];
+        })
+        .filter(function(item){return !!item;})
+      }
 
- - Send variation.json/experiment.json data to template if available
- - Add gulp lint option
- - Allow creation of variations when creating experiments
- - Add function to bring templates as multi-line strings
-
-   ```javascript
-   var template = <%= template('tempalte-name.html') %>;
-  ```
+      if(!current.id || force){
+        //TODO:preform normal push.
+      }else{
+        var previous;
+        pull(current.id).then(function(live){
+          var diff0 = difference(live, current);
+          var diff1 = difference(live, previous);
+          if(!diff0.length){
+            //No difference between live an current
+            //No push necessary
+            console.log('Experiment Up to date.');
+          }else if(!diff1.length){
+            //Live's current state is the same as the previous
+            //TODO:preform normal push
+          }else{
+              if(diffloglevel > 1){
+                diff0.forEach(function(diff){
+                  console.log('Difference in key: %', diff[0]);
+                  if(diffloglevel > 2)
+                    console.log('Live:\n%s\nCurrent:\n%s', diff[1], diff[2]);
+                });
+              console.log('There is an unresolved conflict between you local version and the one in optimizely.')
+              console.log('Please check for diffs and use \'--force\' ');
+          };
+        });
+      }
+     ```

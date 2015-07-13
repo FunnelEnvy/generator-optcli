@@ -4,11 +4,11 @@
   "description": "Yeoman generator",
   "license": "MIT",
   "main": "app/index.js",
-  "repository": "https://github.com/funnelenvy/generator-optcli",
+  "repository": "https://github.com/johnhenryenvy/generator-optcli",
   "author": {
     "name": "John Henry",
     "email": "",
-    "url": "https://github.com/johnhenryenvy/"
+    "url": "https://github.com/johnhenryenvy/generator-optcli"
   },
   "engines": {
     "node": ">=0.10.0"
@@ -20,17 +20,15 @@
     "generators/app",
     "generators/project",
     "generators/experiment",
-    "generators/experiment-advanced",
-    "generators/variation",
-    "generators/variation-advanced"
+    "generators/variation"
   ],
   "keywords": [
     "yeoman-generator"
   ],
   "dependencies": {
-    "yeoman-generator": "^0.18.9",
     "chalk": "^1.0.0",
-    "yosay": "^1.0.2"
+    "funnelenvysays": "^1.0.7",
+    "yeoman-generator": "^0.18.9"
   },
   "devDependencies": {
     "mocha": "*"

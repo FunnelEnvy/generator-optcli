@@ -1,18 +1,17 @@
 'use strict';
 var yeoman = require('yeoman-generator');
 var chalk = require('chalk');
-var yosay = require('yosay');
+var funnelenvysays = require('funnelenvysays');
 
 module.exports = yeoman.generators.Base.extend({
   initializing: function () {
     this.pkg = require('../../package.json');
   },
-
   prompting: function () {
     var done = this.async();
 
     // Have Yeoman greet the user.
-    this.log(yosay(
+    this.log(funnelenvysays(
       'Let\'s create an ' + chalk.blue('Optimizely Project') + '... Funnelenvy Style!'
     ));
 
@@ -61,15 +60,7 @@ module.exports = yeoman.generators.Base.extend({
       );
     },
     projectfiles: function () {
-      var props = this.props;
-      this.fs.copy(
-        this.templatePath('editorconfig'),
-        this.destinationPath(props.name + '/.editorconfig')
-      );
-      this.fs.copy(
-        this.templatePath('jshintrc'),
-        this.destinationPath(props.name + '/.jshintrc')
-      );
+
     }
   }
 });
