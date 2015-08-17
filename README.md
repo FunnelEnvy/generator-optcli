@@ -141,6 +141,7 @@ Each file script and style is processed as an EJS file. The ejs context contains
   - template - this function takes the name of a file from ./\_/assets/templates
   and returns an array of strings representing its lines.
   It takes a second, optional parameter to be passed as a separate ejs context
+  - templateArray - This function is a mask for the template function which will additionally return the template as a formatted array that can be directly set as a javascript variable. 
   - hx - this function takes a string and hashes it. Can be useful for creating classes that avoid collisions with other experiments.
   - package - this object contains the contents of package.json
   - experiment - this object contains the context of experiment.json
@@ -252,7 +253,7 @@ The files:
 ```
 0/\_variation.js
 ```js
-var logobox = <%- JSON.stringify(template('logobox.html')) %>.join('\n');
+var logobox = <%- templateArray('logobox.html') %>;
 $('body').append(logobox);
 ```
 

@@ -147,19 +147,9 @@ var defaultGetTemplates = function(directory){
   }
 };
 var getTemplateArray = function(directory){
-  var templates = {};
-  var templatesDir = path.resolve(directory, "_/assets/templates/");
-  if(fs.existsSync(templatesDir)){
-    fs.readdirSync(templatesDir).forEach(function(file) {
-      templates[file] = fs.readFileSync(path.resolve(templatesDir,file),
-        'utf-8')
-        .replace(/(?:\r\n|\r|\n)/g, '\n')
-    });
-  }
+  var defaultFunc = defaultGetTemplates(directory);
   return function(key, locals){
-    var template = templates[key] || '';
-    return "[ '' \n," + (locals ? ejs.render(template, locals) : template)
-    .split('\n')
+    return "[ '' \n," + defaultFunc(key, locals)
     .map(function(text){return '\"' + text + '\"' + '\n'}) 
     + ", ''].join('\\n')";
   }
