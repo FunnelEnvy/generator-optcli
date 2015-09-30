@@ -12,6 +12,8 @@ The 'main' task, run by default, preforms a number of subtasks:
 - Each file is also processed as an ejs template. Locals include:
    - A 'template' function created from files within a 'templates' directory.
       keys are the file names and values are arrays of the contents
+   - A 'templateArray' function that takes the same arguments as the template function but 
+      will output a formatted array which can be directly set as a javscript variable. 
    - A 'hx' function to help ensure unique strings and prevent naming
       collisions (css classes, ids etc.)
 
@@ -144,12 +146,21 @@ var defaultGetTemplates = function(directory){
     .map(function(text){return text});
   }
 };
+var getTemplateArray = function(directory){
+  var defaultFunc = defaultGetTemplates(directory);
+  return function(key, locals){
+    return "[ '' \n," + defaultFunc(key, locals)
+    .map(function(text){return '\"' + text + '\"' + '\n'}) 
+    + ", ''].join('\\n')";
+  }
+};
 var ejsTemplate = function(data){
   var contents = data.contents.toString('utf8');
   var locals = {
-       template : defaultGetTemplates('.'),
-       package  : defaultGetPackage('.'),
-       hx       : hasher,
+       templateArray  : getTemplateArray('.'),
+       template       : defaultGetTemplates('.'),
+       package        : defaultGetPackage('.'),
+       hx             : hasher,
        experiment : defaultGetExperiment('.')
      };
   contents = ejs.render(contents.toString('utf8'), locals);
